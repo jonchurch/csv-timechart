@@ -6,11 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["timeseries", "timechart"],
+  "author": "jonchurch",
   "license": "ISC",
   "dependencies": {
     "asciichart": "^1.5.25",
-    "csv-parse": "^5.4.0"
+    "csv-parse": "^5.4.0",
+    "yargs": "^17.7.2"
+  },
+  "bin": {
+    "csv-timechart": "./index.js"
   }
 }
