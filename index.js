@@ -2,18 +2,24 @@
 
 const fs = require("fs");
 const asciichart = require("asciichart");
-const parse = require("csv-parse/lib/sync");
+const csvParse = require("csv-parse");
 const path = require("path");
 const yargs = require("yargs");
 
-function displayGraph(filePath, hours, refreshInterval) {
+function displayGraph(filePath, hours) {
+  console.log({ filePath });
   const fileContent = fs.readFileSync(filePath, "utf-8");
-  const records = parse(fileContent, { columns: true });
+  const parser = csvParse({ columns: true, cast: true });
+  const records = parser.parse(fileContent);
 
   const startTime = Date.now() - hours * 60 * 60 * 1000;
 
   const filteredData = records
-    .filter((record) => new Date(record.timestamp).getTime() > startTime)
+    .filter(
+      (record) =>
+        new Date(record.timestamp).getTime() > startTime &&
+        record.credits !== null
+    )
     .map((record) => parseFloat(record.credits));
 
   if (filteredData.length > 0) {
@@ -44,7 +50,7 @@ const options = yargs
   .help()
   .alias("help", "h").argv;
 
-const [filePath] = options._;
+const { file: filePath } = options._;
 const { hours, refresh } = options;
 
 if (!filePath) {
@@ -55,7 +61,4 @@ if (!filePath) {
 const absolutePath = path.resolve(filePath);
 const refreshInterval = refresh * 1000;
 
-setInterval(
-  () => displayGraph(absolutePath, hours, refreshInterval),
-  refreshInterval
-);
+setInterval(() => displayGraph(absolutePath, hours), refreshInterval);
